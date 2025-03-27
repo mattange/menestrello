@@ -1,0 +1,56 @@
+[project]
+name = "menestrello"
+license = "MIT"
+description = "An AI powered interactive storyteller."
+authors = [
+    {name = "Matteo Angeloni", email = "mattange@gmail.com>"}
+]
+readme = "README.md"
+readme_content_type = "text/markdown"
+keywords = ["menestrello","story","interactive","AI","storyteller","children","education"]
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    
+]
+requires-python = ">=3.13,<4.0"
+
+[tool.project.urls]
+homepage = "https://github.com/mattange/menestrello"
+repository = "https://github.com/mattange/menestrello"
+
+[tool.poetry]
+version = "0.1.0"
+requires-poetry = ">=2.0"
+
+[tool.poetry.group.dev.dependencies]
+python-semantic-release = "^9.21.0"
+pytest = "^8.3.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.semantic_release]
+allow_zero_version = false
+build_command = "poetry build"
+commit_parser = "emoji"
+version_toml = [
+    "pyproject.toml:tool.poetry.version",  # Implied Default: Number format
+]
+version_variables = [
+    "src/menestrello/__init__.py:__version__",
+]
+tag_format = "v{version}"
+
+[tool.semantic_release.branches.main]
+match = "(main|master)"
+prerelease_token = "rc"
+prerelease = false
