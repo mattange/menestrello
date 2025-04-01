@@ -3,7 +3,7 @@ from google.cloud import texttospeech
 
 logger = logging.getLogger(__name__)
 
-def text_to_speech(text, output_path, language_code="en-GB", gender="NEUTRAL", speaking_rate=1.0, pitch=0.0):
+def google_tts(text, output_path, language_code="en-GB", gender="NEUTRAL", speaking_rate=1.0, pitch=0.0):
     """
     Converts text to speech using Google Cloud Text-to-Speech API and saves the audio to a file.
 
@@ -28,14 +28,19 @@ def text_to_speech(text, output_path, language_code="en-GB", gender="NEUTRAL", s
     gender_enum = getattr(texttospeech.SsmlVoiceGender, gender.upper(), texttospeech.SsmlVoiceGender.NEUTRAL)
     voice = texttospeech.VoiceSelectionParams(
         language_code=language_code,
-        ssml_gender=gender_enum
+        ssml_gender=gender_enum,
+        name=f"{language_code}-Chirp3-HD-Aoede"
     )
 
     # Configure the audio settings
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3,
         speaking_rate=speaking_rate,
-        pitch=pitch
+        pitch=pitch,
+        volume_gain_db=0.0,
+        # sample_rate_hertz=24000,
+        # below seems not to work despite documentation
+        # effects_profile_id=["small-bluetooth-speaker-class-device"],
     )
 
     logger.debug("Calling API to perform conversion of text to speech")

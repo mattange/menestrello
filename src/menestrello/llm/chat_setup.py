@@ -1,10 +1,12 @@
 
-def llm_chat_setup() -> list[dict]:
+MODEL = "gpt-4o"
+
+def chat_setup() -> tuple[str, list[dict]]:
     """
     Sets up a ChatGPT chatbot for interactive storytelling.
     """
-    # Initial system prompt to guide the chatbot's behavior
-    system_prompt = (
+    # developer prompt to guide the chatbot's behavior
+    developer_prompt = (
         "You are an interactive storytelling AI."
         "Your job is to create engaging stories for children. "
         "At the end of every interaction, you must provide the user with multiple-choice options to decide what happens next in the story."
@@ -17,7 +19,7 @@ def llm_chat_setup() -> list[dict]:
 
     # Example interactions to demonstrate the chatbot's behavior
     example_conversation = [
-        {"role": "system", "content": system_prompt},
+        {"role": "developer", "content": developer_prompt},
         {"role": "user", "content": "Tell me a story about a brave knight."},
         {"role": "assistant", "content": (
             "Once upon a time, in a kingdom far away, there lived a brave knight named Sir Cedric. "
@@ -40,4 +42,4 @@ def llm_chat_setup() -> list[dict]:
             "3. Return to the village to gather more supplies."
         )}
     ]
-    return example_conversation
+    return MODEL, example_conversation
