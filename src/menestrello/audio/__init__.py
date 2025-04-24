@@ -1,1 +1,1 @@
-from .google_tts import google_tts
+from .google_tts import GoogleTextToSpeechConverter

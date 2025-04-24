@@ -1,7 +1,5 @@
 
-MODEL = "gpt-4o"
-
-def chat_setup() -> tuple[str, list[dict]]:
+def chat_setup() -> list[dict]:
     """
     Sets up a ChatGPT chatbot for interactive storytelling.
     """
@@ -42,4 +40,4 @@ def chat_setup() -> tuple[str, list[dict]]:
             "3. Return to the village to gather more supplies."
         )}
     ]
-    return MODEL, example_conversation
+    return example_conversation
