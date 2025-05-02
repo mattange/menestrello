@@ -1,4 +1,9 @@
-OPENAI_MODEL="gpt-4o"
+
+# Constants for the Menestrello application
+# These constants are used throughout the application for various purposes
+LLM_MODEL="gpt-4o"
+LLM_TEMPERATURE=0.7
+
 GOOGLE_TTS_LANG="en-GB"
 GOOGLE_TTS_GENDER="NEUTRAL"
 GOOGLE_TTS_RATE=1.0

@@ -7,7 +7,7 @@ from .generic_tts import TextToSpeechConverter
 
 class GoogleTextToSpeechConverter(TextToSpeechConverter):
 
-    def initialize(self, *args, **kwargs) -> None:
+    def initialize(self, **kwargs) -> None:
         self.client = texttospeech.TextToSpeechClient()
         
         self.language_code = kwargs.get("language_code", "en-GB")
