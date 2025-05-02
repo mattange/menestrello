@@ -16,7 +16,7 @@ STORIES_DIR.mkdir(parents=True, exist_ok=True)
 
 client = OpenAI()
 
-from menestrello.llm import chat_setup, InteractionResponseFormat
+from menestrello.llm import chat_setup, response_format
 from menestrello.audio import GoogleTextToSpeechConverter
 from menestrello.user import ConsoleUserInteraction
 
@@ -68,17 +68,14 @@ def main():
         # Add the user's input to the conversation
         conversation.append({"role": "user", "content": user_input})
 
-        # Get the chatbot's response
+
         response = client.chat.completions.create(
             model=LLM_MODEL,
-            messages=conversation,
             temperature=LLM_TEMPERATURE,
-            # TODO Add temperature and other parameters to the request
-            # TODO Add response format that is not text and is a pydantic model
-            # response_format="text",
+            response_format=response_format(),
+            messages=conversation,
         )
-
-        # # Extract the assistant's reply        
+        # Extract the assistant's reply
         assistant_reply = response.choices[0].message.content
         print(f"Chatbot: {assistant_reply}")
         
@@ -93,10 +90,10 @@ def main():
         # Add the assistant's reply to the conversation
         conversation.append({"role": "assistant", "content": assistant_reply})
 
-        # Convert the assistant's reply to speech
-        output_path = STORY_DIR / f"fragment_{current_story_step}.mp3"
-        google_tts.convert_text_to_speech(assistant_reply, output_path)
-        print(f"Audio content written to file: {output_path}")
+        # # Convert the assistant's reply to speech
+        # output_path = STORY_DIR / f"fragment_{current_story_step}.mp3"
+        # google_tts.convert_text_to_speech(assistant_reply, output_path)
+        # print(f"Audio content written to file: {output_path}")
 
         # Play the audio file (this part is platform-dependent and may require additional libraries)      
 

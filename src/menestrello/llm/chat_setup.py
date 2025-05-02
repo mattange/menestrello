@@ -18,11 +18,18 @@ def chat_setup() -> list[dict]:
         "Encourage the user to use their imagination and creativity."
         "Avoid using themes that are inappropriate for children, such as violence, death, or anything that could be considered disturbing."
         "Focus on themes of adventure, friendship, and problem-solving."
+
+        "If you are requested a JSON schema, you should separate the actual story from the question and options."
+        "Any introduction or explanation should be in the 'introduction' field."
+        "The title of the story should be in the 'title' field."
+        "The story should be in the 'fragment' field, the question in the 'question' field, and the options in the 'options' field." 
+        "For subsequent interactions, the 'title' field of the JSON schema should be the option selected by the user."
+        "The 'fragment' field should contain the next part of the story based on the user's choice."
     )
 
     # Example interactions to demonstrate the chatbot's behavior
     example_conversation = [
-        {"role": "developer", "content": developer_prompt},
+        {"role": "system", "content": developer_prompt},
         {"role": "user", "content": "Tell me a story about a brave knight."},
         {"role": "assistant", "content": (
             "Once upon a time, in a kingdom far away, there lived a brave knight named Sir Cedric. "
