@@ -20,6 +20,8 @@ from menestrello.llm import chat_setup, response_format
 from menestrello.audio import GoogleTextToSpeechConverter
 from menestrello.user import ConsoleUserInteraction
 
+from menestrello.story.story_fragment import StoryFragment
+
 from menestrello.constants import (
     LLM_MODEL,
     LLM_TEMPERATURE,
@@ -68,7 +70,6 @@ def main():
         # Add the user's input to the conversation
         conversation.append({"role": "user", "content": user_input})
 
-
         response = client.chat.completions.create(
             model=LLM_MODEL,
             temperature=LLM_TEMPERATURE,
@@ -77,7 +78,10 @@ def main():
         )
         # Extract the assistant's reply
         assistant_reply = response.choices[0].message.content
-        print(f"Chatbot: {assistant_reply}")
+
+        # create the StoryFragment object
+        story_fragment = StoryFragment.from_json_string(assistant_reply)
+        print(f"Chatbot: {story_fragment.tts_target(include_introduction=True, include_title=True)}")
         
         new_story_node = current_story_tree.create_node(
             f"Fragment: {current_story_step + 1}",

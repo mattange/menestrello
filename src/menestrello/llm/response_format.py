@@ -31,7 +31,7 @@ def response_format() -> dict:
                         "items": {
                             "type": "object",
                             "properties": {
-                                "option": {
+                                "number": {
                                     "type": "integer",
                                     "description": "The option number."
                                 },
