@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 load_dotenv()
 import logging
-from treelib import Tree
 from pathlib import Path
+from playsound3 import playsound
 
 logger = logging.getLogger(__name__)
 
@@ -11,16 +11,15 @@ from openai import OpenAI
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 logger.debug(f"Root directory: {ROOT_DIR}")
 STORIES_DIR = ROOT_DIR / "stories"
-logger.debug(f"Data directory: {STORIES_DIR}")
+logger.debug(f"Stories directory: {STORIES_DIR}")
 STORIES_DIR.mkdir(parents=True, exist_ok=True)
 
 client = OpenAI()
 
-from menestrello.llm import chat_setup, response_format
 from menestrello.audio import GoogleTextToSpeechConverter
-from menestrello.user import ConsoleUserInteraction
+from menestrello.user import ConsoleUserInteraction, KeyboardUserInteraction
 
-from menestrello.story.story_fragment import StoryFragment
+from menestrello.story.story_tree import StoryTree
 
 from menestrello.constants import (
     LLM_MODEL,
@@ -30,77 +29,69 @@ from menestrello.constants import (
 def main():
 
     # HERE play audio file with a welcome message
-    print("Welcome to the Interactive Storytelling Chatbot!\n")
-    print("Type 'exit' to end the conversation.")
-    print("You can also type 'reset' to reset the conversation.")
-
-    user_interaction = ConsoleUserInteraction()
+    user_interaction = KeyboardUserInteraction()
     google_tts = GoogleTextToSpeechConverter()
     google_tts.initialize(language_code="it-IT", gender="FEMALE", speaking_rate=1.0)
-
-    stories_tree = Tree()
-    stories_tree.create_node("Stories", "stories")  # Root node
-    current_story_node = stories_tree.create_node("story_1", 1, parent="stories")
-    current_story_tree = stories_tree.subtree(1)
-    STORY_DIR = STORIES_DIR / current_story_node.tag
-    STORY_DIR.mkdir(parents=True, exist_ok=True)
-    logger.debug(f"Story directory: {STORY_DIR}")
-    conversation = chat_setup()
-    current_story_step = 0
+    response_format = StoryTree.chatbot_response_format()
     
+    story = StoryTree(root_location=STORIES_DIR)
+    
+    user_interaction.provide_output("Welcome to the Interactive Storytelling Chatbot!")
+    user_interaction.present_introduction()
+    in_story = False
     while True:
-        user_input = user_interaction.get_input()
+        if in_story:
+            user_input = user_interaction.get_input()
+        else:
+            user_input = user_interaction.get_initial_story_prompt()
+            in_story = True
 
         if user_input == user_interaction.EXIT_COMMAND:
-            print("Goodbye!")
+            user_interaction.goodbye()
             break
         
         if user_input == user_interaction.RESET_COMMAND:
             # Reset the conversation
-            print("Story reset.")
-            conversation = chat_setup()
-            new_story_node = stories_tree.create_node(f"story_{current_story_node.identifier + 1}", current_story_node.identifier + 1, parent="stories")
-            current_story_node = new_story_node
-            current_story_tree = stories_tree.subtree(current_story_node.identifier)
-            STORY_DIR = STORIES_DIR / current_story_node.tag
-            STORY_DIR.mkdir(parents=True, exist_ok=True)
-            logger.debug(f"Story directory: {STORY_DIR}")
+            story = StoryTree(root_location=STORIES_DIR)
+            in_story = False
             continue
         
+        if user_input == user_interaction.PREVIOUS_COMMAND:
+            user_input = "1"
+        if user_input == user_interaction.OK_COMMAND:
+            user_input = "2"
+        elif user_input == user_interaction.NEXT_COMMAND:
+            user_input = "3"            
+
         # Add the user's input to the conversation
-        conversation.append({"role": "user", "content": user_input})
+        story.chatbot_conversation__append_user_input(user_input)
 
         response = client.chat.completions.create(
             model=LLM_MODEL,
             temperature=LLM_TEMPERATURE,
-            response_format=response_format(),
-            messages=conversation,
+            response_format=response_format, # type: ignore
+            messages=story.chatbot_conversation, # type: ignore
         )
         # Extract the assistant's reply
         assistant_reply = response.choices[0].message.content
 
-        # create the StoryFragment object
-        story_fragment = StoryFragment.from_json_string(assistant_reply)
-        print(f"Chatbot: {story_fragment.tts_target(include_introduction=True, include_title=True)}")
-        
-        new_story_node = current_story_tree.create_node(
-            f"Fragment: {current_story_step + 1}",
-            (current_story_node.identifier, current_story_step + 1),
-            parent=current_story_node.identifier,
+        story.chatbot_conversation__append_chatbot_response(assistant_reply)   # type: ignore
+        story_fragment = story.current_story_interaction
+        if story_fragment is None:
+            user_interaction.provide_output("No story fragment available.")
+            continue
+        audio_file = story_fragment.render_audio(tts_converter=google_tts)
+
+        # Play the audio file
+        logger.debug(f"Playing audio file: {audio_file.as_posix()}")
+        sound = playsound(audio_file.as_posix())
+
+        user_interaction.provide_output(
+            story_fragment.chatbot.tts_target(
+                include_introduction=True, 
+                include_title=True
+            )
         )
-        current_story_node = new_story_node
-        current_story_step += 1
-
-        # Add the assistant's reply to the conversation
-        conversation.append({"role": "assistant", "content": assistant_reply})
-
-        # # Convert the assistant's reply to speech
-        # output_path = STORY_DIR / f"fragment_{current_story_step}.mp3"
-        # google_tts.convert_text_to_speech(assistant_reply, output_path)
-        # print(f"Audio content written to file: {output_path}")
-
-        # Play the audio file (this part is platform-dependent and may require additional libraries)      
-
 
 if __name__ == "__main__":
     main()

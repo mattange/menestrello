@@ -16,3 +16,7 @@ class GenericUserInteraction(ABC):
     @abstractmethod
     def provide_output(self, message: str) -> None:
         pass
+
+    @abstractmethod
+    def get_initial_story_prompt(self) -> str:
+        pass
