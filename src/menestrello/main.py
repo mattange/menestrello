@@ -45,26 +45,41 @@ def main():
         else:
             user_input = user_interaction.get_initial_story_prompt()
             in_story = True
-
-        if user_input == user_interaction.EXIT_COMMAND:
-            user_interaction.goodbye()
-            break
         
-        if user_input == user_interaction.RESET_COMMAND:
+        if user_input == user_interaction.RESET:
             # Reset the conversation
             story = StoryTree(root_location=STORIES_DIR)
             in_story = False
             continue
-        
-        if user_input == user_interaction.PREVIOUS_COMMAND:
-            user_input = "1"
-        if user_input == user_interaction.OK_COMMAND:
-            user_input = "2"
-        elif user_input == user_interaction.NEXT_COMMAND:
-            user_input = "3"            
 
+        elif user_input == user_interaction.UP:
+            story.rewind_up()
+            story_fragment = story.current_story_interaction
+            if story_fragment is not None:
+                # perhaps play audio file 
+                user_interaction.provide_output(
+                    story_fragment.chatbot.tts_target(
+                        include_introduction=True, 
+                        include_title=True
+                    )
+                )
+            else:
+                story = StoryTree(root_location=STORIES_DIR)
+                in_story = False
+            continue
+
+        elif user_input == user_interaction.ONE:
+            user_input = "1"
+        elif user_input == user_interaction.TWO:
+            user_input = "2"
+        elif user_input == user_interaction.THREE:
+            user_input = "3"
+        else:
+            user_interaction.goodbye()
+            break
+        
         # Add the user's input to the conversation
-        story.chatbot_conversation__append_user_input(user_input)
+        story.chatbot_conversation__append_user_input(user_input)  # type: ignore
 
         response = client.chat.completions.create(
             model=LLM_MODEL,
@@ -80,11 +95,11 @@ def main():
         if story_fragment is None:
             user_interaction.provide_output("No story fragment available.")
             continue
-        audio_file = story_fragment.render_audio(tts_converter=google_tts)
-
+        
         # Play the audio file
-        logger.debug(f"Playing audio file: {audio_file.as_posix()}")
-        sound = playsound(audio_file.as_posix())
+        # audio_file = story_fragment.render_audio(tts_converter=google_tts)
+        # logger.debug(f"Playing audio file: {audio_file.as_posix()}")
+        # sound = playsound(audio_file.as_posix())
 
         user_interaction.provide_output(
             story_fragment.chatbot.tts_target(

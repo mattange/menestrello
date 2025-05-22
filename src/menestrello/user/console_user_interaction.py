@@ -7,11 +7,11 @@ class ConsoleUserInteraction(TextUserInteractionMixin, GenericUserInteraction):
     """
     Class to handle user input and output in the console.
     """
-    EXIT_COMMAND: ClassVar[str] = "exit"
-    RESET_COMMAND: ClassVar[str] = "reset"
-    PREVIOUS_COMMAND: ClassVar[str] = "1"
-    NEXT_COMMAND: ClassVar[str] = "3"
-    OK_COMMAND: ClassVar[str] = "2"
+    EXIT: ClassVar[str] = "exit"
+    RESET: ClassVar[str] = "reset"
+    ONE: ClassVar[str] = "1"
+    TWO: ClassVar[str] = "2"
+    THREE: ClassVar[str] = "3"
 
     def get_input(self) -> str:
         """

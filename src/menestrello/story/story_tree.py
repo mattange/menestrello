@@ -46,6 +46,19 @@ class StoryTree():
         logger.debug(f"Added interaction w/ tag '{tag}' under parent node '{parent_node_identifier}'")
         return self
     
+    def rewind_up(self) -> Self:
+        if self._current_step_identifier is None:
+            return self
+        parent_node = self._story_tree.parent(self._current_step_identifier)
+        if parent_node is None:
+            return self
+        intrcn: Interaction = parent_node.data
+        self._current_step_identifier = parent_node.identifier  # type: ignore
+        self._current_subtree = self._story_tree.subtree(self._current_step_identifier)
+        self._current_step_root_location = intrcn.storage_folder
+        logger.debug(f"Rewound to parent node '{self._current_step_identifier}'")
+        return self
+    
     @property
     def current_story_interaction(self) -> Interaction | None:
         n = self._story_tree.get_node(self._current_step_identifier)

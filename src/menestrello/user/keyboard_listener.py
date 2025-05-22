@@ -2,16 +2,9 @@ from pynput import keyboard
 import threading
 
 class KeyboardListener:
-    def __init__(self):
+    def __init__(self, keys_to_watch: set):
         # Watch for arrow keys, enter, and escape
-        self.keys_to_watch = {
-            keyboard.Key.left,
-            keyboard.Key.right,
-            keyboard.Key.down,
-            keyboard.Key.up,
-            keyboard.Key.enter,
-            keyboard.Key.esc,
-        }
+        self.keys_to_watch = keys_to_watch
         self.pressed_keys = set()
         self.listener = keyboard.Listener(on_press=self.on_press)
         self._lock = threading.Lock()

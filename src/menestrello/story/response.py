@@ -12,6 +12,14 @@ class Response(BaseModel):
     question: str | None = Field(None, description="The question for the user about the next section.")
     options: list[Option] | None = Field(None, description="The options for the user to choose from.", min_length=2, max_length=3)
 
+    def get_option(self, number: int) -> Option | None:
+        if self.options is None:
+            return None
+        for option in self.options:
+            if option.number == number:
+                return option
+        return None
+
     def tts_target(self, include_introduction=False, include_title=False) -> str:
         """
         Return the TTS target for the fragment.

@@ -1,13 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar
+from typing import Any
 
 class GenericUserInteraction(ABC):
     """
     Class to handle user input and output.
     """
-
-    EXIT_COMMAND: ClassVar[Any] = None
-    RESET_COMMAND: ClassVar[Any] = None
 
     @abstractmethod
     def get_input(self) -> Any:
