@@ -39,6 +39,7 @@ def main():
     user_interaction.provide_output("Welcome to the Interactive Storytelling Chatbot!")
     user_interaction.present_introduction()
     in_story = False
+
     while True:
         if in_story:
             user_input = user_interaction.get_input()
@@ -68,6 +69,20 @@ def main():
                 in_story = False
             continue
 
+        # handle user input if you want to repeat the options
+        elif user_input == user_interaction.REPEAT:
+            if story.current_story_interaction is not None:
+                user_interaction.provide_output(
+                    story.current_story_interaction.chatbot.tts_target(
+                        include_introduction=False, 
+                        include_title=False,
+                        include_frgment=False,
+                        include_question=True,
+                        include_options=True,
+                    )
+                )
+            continue
+
         elif user_input == user_interaction.ONE:
             user_input = "1"
         elif user_input == user_interaction.TWO:
@@ -75,9 +90,12 @@ def main():
         elif user_input == user_interaction.THREE:
             user_input = "3"
         else:
+            # exit basically doing same as reset
             user_interaction.goodbye()
-            break
-        
+            story = StoryTree(root_location=STORIES_DIR)
+            in_story = False
+            continue
+
         # Add the user's input to the conversation
         story.chatbot_conversation__append_user_input(user_input)  # type: ignore
 

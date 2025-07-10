@@ -20,7 +20,14 @@ class Response(BaseModel):
                 return option
         return None
 
-    def tts_target(self, include_introduction=False, include_title=False) -> str:
+    def tts_target(
+            self, 
+            include_introduction=False, 
+            include_title=False,
+            include_frgment=True,
+            include_question=True,
+            include_options=True,
+        ) -> str:
         """
         Return the TTS target for the fragment.
         """
@@ -29,9 +36,10 @@ class Response(BaseModel):
             s += self.introduction + "\n\n"
         if include_title:
             s+= f"{self.title}\n\n"
-        s += self.fragment + "\n\n"
-        if self.question:
+        if include_frgment:
+            s += self.fragment + "\n\n"
+        if self.question and include_question:
             s += f"{self.question}\n"
-        if self.options:
+        if self.options and include_options:
             s += "\n".join([f"- {option.description}" for option in self.options]) + "\n\n"
         return s
