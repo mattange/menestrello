@@ -25,9 +25,13 @@ dependencies = [
     "pydantic (>=2.11.3,<3.0.0)",
     "playsound3 (>=3.2.3,<4.0.0)",
     "pynput (>=1.8.1,<2.0.0)",
-    "jinja2 (>=3.1.6,<4.0.0)"    
+    "jinja2 (>=3.1.6,<4.0.0)"
 ]
 requires-python = ">=3.13,<4.0"
+
+[project.scripts]
+menestrello = "menestrello.main:main"
+generate_static_audio_eng = "menestrello.generate_static_audio_eng:main"
 
 [tool.project.urls]
 homepage = "https://github.com/mattange/menestrello"
@@ -40,8 +44,10 @@ packages = [{include = "menestrello", from="src"}]
 
 [tool.poetry.group.dev.dependencies]
 python-semantic-release = "^9.21.0"
-pytest = "^8.3.5"
 ipykernel = "^6.29.5"
+
+[tool.poetry.group.tests.dependencies]
+pytest = "^8.3.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

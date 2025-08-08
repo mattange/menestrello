@@ -1,2 +1,2 @@
-from .console_user_interaction import ConsoleUserInteraction
-from .keyboard_user_interaction import KeyboardUserInteraction
+from .console_user_io import ConsoleUserIO
+from .keyboard_user_io import KeyboardUserIO

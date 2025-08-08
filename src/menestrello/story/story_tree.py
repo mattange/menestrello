@@ -31,6 +31,9 @@ class StoryTree():
         self._current_step_root_location: Path = self._story_root_location
         self._chatbot_conversation = self.chatbot_setup()
     
+    def __len__(self) -> int:
+        return len(self._story_tree)
+
     def add_interaction(self, interaction: Interaction) -> Self:
         tag = interaction.title.replace(" ", "_").lower()
         parent_node_identifier = self._current_step_identifier

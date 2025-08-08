@@ -1,7 +1,11 @@
-import pytest
-from src.menestrello.main import some_function  # Replace with actual function to test
+from playsound3 import playsound
+from pathlib import Path
 
-def test_some_function():
-    assert some_function() == expected_value  # Replace with actual test logic and expected value
-
-# Add more test cases as needed
+def test_sound_player():
+    test_folder = Path(__file__).parent
+    test_audio_file = test_folder / "file_for_test.mp3"
+    try:
+        _ = playsound(test_audio_file.as_posix())
+        assert True, "Sound played successfully"
+    except Exception as e:
+        raise AssertionError(f"Failed to play sound: {e}")

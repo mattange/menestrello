@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 load_dotenv()
 import logging
 from pathlib import Path
-from playsound3 import playsound
 
 logger = logging.getLogger(__name__)
 
@@ -17,45 +16,49 @@ STORIES_DIR.mkdir(parents=True, exist_ok=True)
 client = OpenAI()
 
 from menestrello.audio import GoogleTextToSpeechConverter
-from menestrello.user import ConsoleUserInteraction, KeyboardUserInteraction
+from menestrello.user import ConsoleUserIO, KeyboardUserIO
 
 from menestrello.story.story_tree import StoryTree
 
 from menestrello.constants import (
     LLM_MODEL,
     LLM_TEMPERATURE,
+    GOOGLE_TTS_LANG,
+    GOOGLE_TTS_GENDER,
+    GOOGLE_TTS_RATE,
+    GOOGLE_TTS_PITCH,
 )
 
 def main():
 
     # HERE play audio file with a welcome message
-    user_interaction = KeyboardUserInteraction()
+    user_interaction = KeyboardUserIO()
     google_tts = GoogleTextToSpeechConverter()
-    google_tts.initialize(language_code="it-IT", gender="FEMALE", speaking_rate=1.0)
+    google_tts.initialize(
+        language_code=GOOGLE_TTS_LANG, 
+        gender=GOOGLE_TTS_GENDER, 
+        speaking_rate=GOOGLE_TTS_RATE,
+        pitch=GOOGLE_TTS_PITCH,
+    )
     response_format = StoryTree.chatbot_response_format()
     
-    story = StoryTree(root_location=STORIES_DIR)
-    
-    user_interaction.provide_output("Welcome to the Interactive Storytelling Chatbot!")
+    user_interaction.story = StoryTree(root_location=STORIES_DIR)
     user_interaction.present_introduction()
-    in_story = False
 
     while True:
-        if in_story:
+        if len(user_interaction.story) > 0:
             user_input = user_interaction.get_input()
         else:
             user_input = user_interaction.get_initial_story_prompt()
-            in_story = True
         
         if user_input == user_interaction.RESET:
             # Reset the conversation
-            story = StoryTree(root_location=STORIES_DIR)
-            in_story = False
+            user_interaction.story = StoryTree(root_location=STORIES_DIR)
             continue
 
         elif user_input == user_interaction.UP:
-            story.rewind_up()
-            story_fragment = story.current_story_interaction
+            user_interaction.story.rewind_up()
+            story_fragment = user_interaction.story.current_story_interaction
             if story_fragment is not None:
                 # perhaps play audio file 
                 user_interaction.provide_output(
@@ -65,15 +68,14 @@ def main():
                     )
                 )
             else:
-                story = StoryTree(root_location=STORIES_DIR)
-                in_story = False
+                user_interaction.story = StoryTree(root_location=STORIES_DIR)
             continue
 
         # handle user input if you want to repeat the options
         elif user_input == user_interaction.REPEAT:
-            if story.current_story_interaction is not None:
+            if user_interaction.story.current_story_interaction is not None:
                 user_interaction.provide_output(
-                    story.current_story_interaction.chatbot.tts_target(
+                    user_interaction.story.current_story_interaction.chatbot.tts_target(
                         include_introduction=False, 
                         include_title=False,
                         include_frgment=False,
@@ -92,12 +94,11 @@ def main():
         else:
             # exit basically doing same as reset
             user_interaction.goodbye()
-            story = StoryTree(root_location=STORIES_DIR)
-            in_story = False
+            user_interaction.story = StoryTree(root_location=STORIES_DIR)
             continue
 
         # Add the user's input to the conversation
-        story.chatbot_conversation__append_user_input(user_input)  # type: ignore
+        user_interaction.story.chatbot_conversation__append_user_input(user_input)  # type: ignore
 
         response = client.chat.completions.create(
             model=LLM_MODEL,
@@ -108,8 +109,8 @@ def main():
         # Extract the assistant's reply
         assistant_reply = response.choices[0].message.content
 
-        story.chatbot_conversation__append_chatbot_response(assistant_reply)   # type: ignore
-        story_fragment = story.current_story_interaction
+        user_interaction.story.chatbot_conversation__append_chatbot_response(assistant_reply)   # type: ignore
+        story_fragment = user_interaction.story.current_story_interaction
         if story_fragment is None:
             user_interaction.provide_output("No story fragment available.")
             continue

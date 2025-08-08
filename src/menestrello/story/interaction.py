@@ -5,10 +5,7 @@ from typing import Self, ClassVar
 import uuid
 from functools import cached_property
 
-
 logger = logging.getLogger(__name__)
-
-from ..audio.generic_tts import TextToSpeechConverter
 
 from .response import Response
 
@@ -62,15 +59,3 @@ class Interaction(BaseModel):
         logger.debug(f"Storing interaction as JSON: {self.storage_folder.as_posix()}.")
         return self
         
-    def render_audio(self, tts_converter: TextToSpeechConverter) -> Path:
-        """
-        Render the fragment audio.
-        """
-        logger.debug(f"Rendering fragment audio: {self.storage_folder.as_posix()}.")
-        output_path = self.storage_folder / self.audio_file
-        tts_converter.convert_text_to_speech(
-            text=self.chatbot.tts_target(include_introduction=True, include_title=True),
-            output_file=output_path.as_posix()
-        )
-        logger.debug(f"... done.")
-        return output_path
