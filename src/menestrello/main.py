@@ -36,10 +36,10 @@ from menestrello.constants import (
 
 def main():
 
-    # user_interaction = KeyboardUserIO()
+    user_interaction = KeyboardUserIO()
     # user_interaction = ConsoleUserIO()
     # user_interaction = AudioOutputKeyboardInputUserIO()
-    user_interaction = RandomStoryAudioOutputKeyboardInputUserIO()
+    # user_interaction = RandomStoryAudioOutputKeyboardInputUserIO()
 
     google_tts = GoogleTextToSpeechConverter()
     google_tts.initialize(
@@ -51,24 +51,25 @@ def main():
     response_format = StoryTree.chatbot_response_format()
     
     user_interaction.present_introduction()
-    user_interaction.story = StoryTree(root_location=STORIES_DIR)
 
     while True:
-        if len(user_interaction.story) > 0:
-            user_input = user_interaction.get_input()
+
+        user_input = user_interaction.get_input()
+
+        if (user_interaction.story is not None) and (len(user_interaction.story) > 0):
             play_holding_audio = True
         else:
-            user_input = user_interaction.get_initial_story_prompt()
             play_holding_audio = False
-        
-        # handle user input to reset the conversation
-        if user_input == user_interaction.RESET:
+
+        # handle user input to start the conversation
+        # at any point in the story or at the beginning
+        if (user_input == user_interaction.START) or (user_interaction.story is None):
             # Reset the conversation
             user_interaction.story = StoryTree(root_location=STORIES_DIR)
-            continue
-        
+            user_input = user_interaction.get_initial_story_prompt()
+
         # handle user input to rewind up a level in the story
-        elif user_input == user_interaction.UP:
+        if user_input == user_interaction.UP:
             user_interaction.story.rewind_up()
             story_fragment = user_interaction.story.current_story_interaction
             if story_fragment is not None:
@@ -116,6 +117,18 @@ def main():
             user_interaction.goodbye()
             break
 
+        
+        # here we are at a situation where a problem may arise:
+        # we have rewound up in the story, and the user may choose an option
+        # that we created already or not. if not, the code below works fine as 
+        # it will create a new one in the conversation
+        # also the chatbot conversation that you see in the story tree is misleading
+        # as it may not reflect the actual conversation
+        # so you have to:
+        # 1. check if the current step has children in the story tree with the same option
+        # 2. if so, return the story_fragment as that one to be rerendered
+        # 3. if not proceed with the below 
+
         # Add the user's input to the conversation
         user_interaction.story.chatbot_conversation__append_user_input(user_input)  # type: ignore
 
@@ -140,14 +153,19 @@ def main():
         #     continue
         
         user_interaction.provide_output(
-            story_fragment.chatbot.tts_target(
+            story_fragment.chatbot.tts_target( # type: ignore
                 include_introduction=True, 
                 include_title=True
             ),
             tts_converter=google_tts,
-            output_path=story_fragment.storage_folder / "fragment.mp3",
+            output_path=story_fragment.storage_folder / "fragment.mp3", # type: ignore
             play_holding_audio=play_holding_audio,
         )
+
+        # now check if the story fragment has options
+        # and if not, then loop back to the beginning
+        if not story_fragment.chatbot.options: # type: ignore
+            user_interaction.story = None
 
 if __name__ == "__main__":
     main()

@@ -7,7 +7,7 @@ from .keyboard_listener import KeyboardListener
 class KeyboardInputMixin():
 
     EXIT: ClassVar[keyboard.Key] = keyboard.Key.esc
-    RESET: ClassVar[keyboard.Key] = keyboard.Key.backspace
+    START: ClassVar[keyboard.Key] = keyboard.Key.backspace
     UP: ClassVar[keyboard.Key] = keyboard.Key.up
     ONE: ClassVar[keyboard.Key] = keyboard.Key.left
     TWO: ClassVar[keyboard.Key] = keyboard.Key.down
@@ -18,7 +18,7 @@ class KeyboardInputMixin():
         super().__init__()
         keys_to_watch = {
             self.EXIT,
-            self.RESET,
+            self.START,
             self.UP,
             self.REPEAT,
             self.ONE,
@@ -32,7 +32,7 @@ class KeyboardInputMixin():
         """
         Get input from the user.
         """
-        print("Press 'ESC' to exit, 'BKSP' to reset, 'UP' for up one level, 'R' to repeat, 'LEFT' for 1, 'DOWN' for 2, 'RIGHT' for 3.")
+        print("Press 'ESC' to exit, 'BKSP' to start, 'UP' for up one level, 'R' to repeat, 'LEFT' for 1, 'DOWN' for 2, 'RIGHT' for 3.")
         pressed_keys = []
         if not self.keyboard_listener.is_running():
             self.keyboard_listener.start()
