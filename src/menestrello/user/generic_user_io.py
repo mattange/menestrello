@@ -16,9 +16,9 @@ class GenericUserIO(ABC):
     def provide_output(self, message: str | None = None, **kwargs) -> None:
         pass
 
-    @abstractmethod
     def get_initial_story_prompt(self) -> str:
-        pass
+        user_input = input("Tell me the topic of the story: ").lower()
+        return user_input
 
     @property
     def story(self) -> StoryTree | None:

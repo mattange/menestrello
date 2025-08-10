@@ -6,7 +6,7 @@ class KeyboardListener:
         # Watch for arrow keys, enter, and escape
         self.keys_to_watch = keys_to_watch
         self.pressed_keys = set()
-        self.listener = keyboard.Listener(on_press=self.on_press)
+        self.listener = None
         self._lock = threading.Lock()
         self._running = False
 
@@ -16,12 +16,16 @@ class KeyboardListener:
                 self.pressed_keys.add(key)
 
     def start(self):
-        self._running = True
+        if self.listener is not None and self.listener.running:
+            return
+        self.listener = keyboard.Listener(on_press=self.on_press)
         self.listener.start()
+        self._running = True
 
     def stop(self):
         self._running = False
-        self.listener.stop()
+        if self.listener is not None:
+            self.listener.stop()
 
     def get_pressed_keys(self):
         with self._lock:

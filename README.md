@@ -10,6 +10,12 @@ To install the project, you can use Poetry. First, ensure you have Poetry instal
 poetry install
 ```
 
+## Dependencies on Raspberri Pi
+
+This project depends on an audio backend to be able to play audio. GStreamer or FFMpeg.
+The backends supported are the ones supported by the playsound3 library.
+[Check Pypi at this page.](https://pypi.org/project/playsound3/)
+
 ## Usage
 
 To run the application, use the following command:

@@ -29,7 +29,7 @@ class GoogleTextToSpeechConverter(TextToSpeechConverter):
 
         # Configure the audio settings
         self.audio_config = texttospeech.AudioConfig(
-            audio_encoding=texttospeech.AudioEncoding.MP3,
+            audio_encoding=self.audio_encoding,
             speaking_rate=self.speaking_rate,
             pitch=self.pitch,
             volume_gain_db=self.volume_gain_db,

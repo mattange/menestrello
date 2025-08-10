@@ -24,7 +24,7 @@ class Response(BaseModel):
             self, 
             include_introduction=False, 
             include_title=False,
-            include_frgment=True,
+            include_fragment=True,
             include_question=True,
             include_options=True,
         ) -> str:
@@ -36,7 +36,7 @@ class Response(BaseModel):
             s += self.introduction + "\n\n"
         if include_title:
             s+= f"{self.title}\n\n"
-        if include_frgment:
+        if include_fragment:
             s += self.fragment + "\n\n"
         if self.question and include_question:
             s += f"{self.question}\n"

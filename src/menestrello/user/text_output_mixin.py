@@ -20,7 +20,3 @@ class TextOutputMixin:
         Provide a goodbye message to the user.
         """
         print("Goodbye! Thank you for using the Interactive Storytelling Chatbot.")
-
-    def get_initial_story_prompt(self) -> str:
-        user_input = input("Tell me the topic of the story: ").lower()
-        return user_input

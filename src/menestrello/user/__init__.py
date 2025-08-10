@@ -1,2 +1,2 @@
 from .console_user_io import ConsoleUserIO
-from .keyboard_user_io import KeyboardUserIO
+from .keyboard_user_io import KeyboardUserIO, AudioOutputKeyboardInputUserIO, RandomStoryAudioOutputKeyboardInputUserIO

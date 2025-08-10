@@ -21,7 +21,6 @@ class Interaction(BaseModel):
     _storage_folder: Path | None = PrivateAttr(default=None, init=False)
     
     interaction_json_file: ClassVar[str] = "interaction.json"
-    audio_file: ClassVar[str] = "fragment.mp3"
 
     @classmethod
     def from_primitives(cls, user_input: str, chatbot_json_string: str) -> "Interaction":

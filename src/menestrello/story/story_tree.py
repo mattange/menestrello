@@ -14,14 +14,6 @@ default_developer_prompt_file = local_folder / "default_developer_prompt.txt"
 with default_developer_prompt_file.open("r") as f:
     developer_prompt = f.read()
 
-def read_lines_from_file(filepath: str | Path) -> list[str]:
-    # Reads lines from a text file and returns them as a list of strings
-    with open(filepath, "r", encoding="utf-8") as f:
-        return [line.rstrip('\n') for line in f]
-    
-available_story_characters = read_lines_from_file(local_folder / "available_story_characters.txt")
-available_story_settings = read_lines_from_file(local_folder / "available_story_settings.txt")
-
 class StoryTree():
     def __init__(self, root_location: str | Path):
         self._story_tree: Tree = Tree()
