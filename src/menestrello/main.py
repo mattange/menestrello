@@ -84,12 +84,13 @@ def main():
                 )
             else:
                 user_interaction.story = StoryTree(root_location=STORIES_DIR)
+                user_interaction.present_introduction()
             continue
 
         # handle user input if you want to repeat the options
         elif user_input == user_interaction.REPEAT:
-            if user_interaction.story.current_story_interaction is not None:
-                story_fragment = user_interaction.story.current_story_interaction
+            story_fragment = user_interaction.story.current_story_interaction
+            if story_fragment is not None:
                 user_interaction.provide_output(
                     story_fragment.chatbot.tts_target(
                         include_introduction=False, 
@@ -129,20 +130,25 @@ def main():
         # 2. if so, return the story_fragment as that one to be rerendered
         # 3. if not proceed with the below 
 
-        # Add the user's input to the conversation
-        user_interaction.story.chatbot_conversation__append_user_input(user_input)  # type: ignore
+        # check if the user input matches any of the options under the current step
+        assert(isinstance(user_input,str))
+        story_fragment = user_interaction.story.check_user_input_under_current_step(user_input)
 
-        response = client.chat.completions.create(
-            model=LLM_MODEL,
-            temperature=LLM_TEMPERATURE,
-            response_format=response_format, # type: ignore
-            messages=user_interaction.story.chatbot_conversation, # type: ignore
-        )
-        # Extract the assistant's reply
-        assistant_reply = response.choices[0].message.content
+        if story_fragment is  None:
+            # Add the user's input to the conversation
+            user_interaction.story.chatbot_conversation__append_user_input(user_input)  # type: ignore
 
-        user_interaction.story.chatbot_conversation__append_chatbot_response(assistant_reply)   # type: ignore
-        story_fragment = user_interaction.story.current_story_interaction
+            response = client.chat.completions.create(
+                model=LLM_MODEL,
+                temperature=LLM_TEMPERATURE,
+                response_format=response_format, # type: ignore
+                messages=user_interaction.story.chatbot_conversation, # type: ignore
+            )
+            # Extract the assistant's reply
+            assistant_reply = response.choices[0].message.content
+
+            user_interaction.story.chatbot_conversation__append_chatbot_response(assistant_reply)   # type: ignore
+            story_fragment = user_interaction.story.current_story_interaction
 
         # if story_fragment is None:
         #     user_interaction.provide_output(

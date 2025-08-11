@@ -26,7 +26,7 @@ class StoryTree():
     def __len__(self) -> int:
         return len(self._story_tree)
 
-    def add_interaction(self, interaction: Interaction) -> Self:
+    def _add_interaction(self, interaction: Interaction) -> Self:
         tag = interaction.title.replace(" ", "_").lower()
         parent_node_identifier = self._current_step_identifier
         node = Node(tag=tag, data=interaction, identifier=str(interaction.identifier))
@@ -51,6 +51,7 @@ class StoryTree():
         self._current_step_identifier = parent_node.identifier  # type: ignore
         self._current_subtree = self._story_tree.subtree(self._current_step_identifier)
         self._current_step_root_location = intrcn.storage_folder
+        self._chatbot_conversation = self._chatbot_conversation[:-2]  # remove last user/assistant inputs
         logger.debug(f"Rewound to parent node '{self._current_step_identifier}'")
         return self
     
@@ -65,6 +66,16 @@ class StoryTree():
     @property
     def chatbot_conversation(self) -> list[dict[str, str]]:
         return self._chatbot_conversation
+
+    def check_user_input_under_current_step(self, user_input: str) -> Interaction | None:
+        """
+        Check if the user input matches any of the options under the current step.
+        Returns the Interaction if found, otherwise None.
+        """
+        for node in self._current_subtree.all_nodes():
+            if node.data.user == user_input:
+                return node.data
+        return None
     
     def _chatbot_conversation_append_to(self, role: str, content: str) -> Self:
         self._chatbot_conversation.append({"role": role, "content": content})
@@ -75,8 +86,13 @@ class StoryTree():
     
     def chatbot_conversation__append_chatbot_response(self, content: str) -> Self:
         user_input = self._chatbot_conversation[-1]["content"]
+
+        # you could create here an hex identifier to construct the interaction
+        # unique based on its folder location created from the parent
+        # and the user input blended together in a string
+
         story_interaction = Interaction.from_primitives(user_input, content)
-        self.add_interaction(story_interaction)
+        self._add_interaction(story_interaction)
         return self._chatbot_conversation_append_to(role="assistant", content=content)
 
     @staticmethod
