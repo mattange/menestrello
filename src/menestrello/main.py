@@ -87,8 +87,8 @@ def main():
                 user_interaction.present_introduction()
             continue
 
-        # handle user input if you want to repeat the options
-        elif user_input == user_interaction.REPEAT:
+        # handle user input if you want to repeat the options only
+        elif user_input == user_interaction.REPEAT_OPTIONS:
             story_fragment = user_interaction.story.current_story_interaction
             if story_fragment is not None:
                 user_interaction.provide_output(
@@ -104,7 +104,27 @@ def main():
                     play_holding_audio=False,
                 )
             continue
-        
+
+        # handle user input if you want to repeat the whole story fragment
+        elif user_input == user_interaction.REPEAT:
+            story_fragment = user_interaction.story.current_story_interaction
+            if story_fragment is not None:
+                # this is the same as at bottom of the loop
+                # but as it should be there already, we don't need
+                # the holding audio
+                user_interaction.provide_output(
+                    story_fragment.chatbot.tts_target( # type: ignore
+                        include_introduction=True, 
+                        include_title=True
+                    ),
+                    tts_converter=google_tts,
+                    output_path=story_fragment.storage_folder / "fragment.mp3", # type: ignore
+                    play_holding_audio=False,
+                )
+                continue
+
+
+
         # handle user input for the options
         elif user_input == user_interaction.ONE:
             user_input = "1"

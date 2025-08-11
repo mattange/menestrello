@@ -14,6 +14,7 @@ class ConsoleUserIO(TextOutputMixin, GenericUserIO):
     TWO: ClassVar[str] = "2"
     THREE: ClassVar[str] = "3"
     REPEAT: ClassVar[str] = "repeat"
+    REPEAT_OPTIONS: ClassVar[str] = "repeat options"
 
     def get_input(self) -> str:
         """

@@ -4,7 +4,7 @@ import time
 
 from .keyboard_listener import KeyboardListener
 
-class KeyboardInputMixin():
+class KeyboardInputMixin:
 
     EXIT: ClassVar[keyboard.Key] = keyboard.Key.esc
     START: ClassVar[keyboard.Key] = keyboard.Key.backspace
@@ -12,7 +12,8 @@ class KeyboardInputMixin():
     ONE: ClassVar[keyboard.Key] = keyboard.Key.left
     TWO: ClassVar[keyboard.Key] = keyboard.Key.down
     THREE: ClassVar[keyboard.Key] = keyboard.Key.right
-    REPEAT: ClassVar[keyboard.KeyCode] = keyboard.KeyCode.from_char('r')
+    REPEAT: ClassVar[keyboard.KeyCode] = keyboard.KeyCode.from_char('R')
+    REPEAT_OPTIONS: ClassVar[keyboard.KeyCode] = keyboard.KeyCode.from_char('r')
 
     def __init__(self):
         super().__init__()
