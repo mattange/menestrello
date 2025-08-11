@@ -4,7 +4,7 @@ import platform
 
 
 skip_reason = "This test requires a physical MPR121 sensor connected to the I2C bus and ARM architecture."
-skip_if_not_arm = not platform.machine().startswith("arm")
+skip_if_not_arm = not platform.machine().startswith("aarch64")
 
 @pytest.mark.skipif(skip_if_not_arm, reason=skip_reason)
 def test_mpr121_pins():
