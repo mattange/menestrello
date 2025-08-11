@@ -16,12 +16,9 @@ STORIES_DIR.mkdir(parents=True, exist_ok=True)
 client = OpenAI()
 
 from menestrello.audio import GoogleTextToSpeechConverter
-from menestrello.user import (
-    ConsoleUserIO, 
-    KeyboardUserIO, 
-    AudioOutputKeyboardInputUserIO,
-    RandomStoryAudioOutputKeyboardInputUserIO,
-)
+# from menestrello.user.console_user_io import ConsoleUserIO
+# from menestrello.user.keyboard_user_io import KeyboardUserIO, AudioOutputKeyboardInputUserIO, RandomStoryAudioOutputKeyboardInputUserIO
+from menestrello.user.touch_user_io import RandomStoryTouchInputAudioOutputUserIO
 
 from menestrello.story.story_tree import StoryTree
 
@@ -36,10 +33,11 @@ from menestrello.constants import (
 
 def main():
 
-    user_interaction = KeyboardUserIO()
+    # user_interaction = KeyboardUserIO()
     # user_interaction = ConsoleUserIO()
     # user_interaction = AudioOutputKeyboardInputUserIO()
     # user_interaction = RandomStoryAudioOutputKeyboardInputUserIO()
+    user_interaction = RandomStoryTouchInputAudioOutputUserIO()
 
     google_tts = GoogleTextToSpeechConverter()
     google_tts.initialize(

@@ -23,6 +23,7 @@ class TouchInputMixin:
     THREE: ClassVar[tuple[int,str]] = (3, "single")
     REPEAT: ClassVar[tuple[int,str]] = (0, "single")
     REPEAT_OPTIONS: ClassVar[tuple[int,str]] = (2, "single")
+    EXIT: ClassVar[tuple[int,str]] = (11, "long")
 
     def __init__(self, i2c_bus=None, address=None):
         if i2c_bus is None:
