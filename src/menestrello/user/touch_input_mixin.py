@@ -1,8 +1,8 @@
 from typing import ClassVar
 import time
-import board
-import busio
-import adafruit_mpr121
+import board # pyright: ignore[reportMissingImports]
+import busio # pyright: ignore[reportMissingImports]
+import adafruit_mpr121 # pyright: ignore[reportMissingImports]
 
 class TouchInputMixin:
     """
@@ -10,7 +10,7 @@ class TouchInputMixin:
     Detects single tap, double tap, and long press.
     """
     SINGLE_TAP_MAX: ClassVar[float] = 0.3      # seconds
-    DOUBLE_TAP_GAP_MAX: ClassVar[float] = 0.4  # seconds between taps
+    DOUBLE_TAP_GAP_MAX: ClassVar[float] = 0.5  # max seconds between taps
     LONG_PRESS_MIN: ClassVar[float] = 1.0      # seconds
     
     DEFAULT_MPR121_ADDRESS: ClassVar[int] = 0x5A       # Default I2C address for MPR121
@@ -37,7 +37,6 @@ class TouchInputMixin:
         Waits for a touch event and returns a tuple:
         (pin_number, event_type) where event_type is 'single', 'double', or 'long'
         """
-        print("Touch any of the 12 MPR121 pins...")
         last_tap_time = {}
         tap_count = {}
         while True:
