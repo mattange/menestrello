@@ -12,11 +12,11 @@ class TextOutputMixin:
         """
         Present the introduction to the user.
         """
-        print("Welcome to the Interactive Storytelling Chatbot!")
-        print("You can interact with the chatbot by typing your responses or using keyboard shortcuts.")
+        print("Welcome! I am Menestrello!")
+        print("You can interact with me by typing your responses or using keyboard shortcuts.")
 
     def goodbye(self) -> None:
         """
         Provide a goodbye message to the user.
         """
-        print("Goodbye! Thank you for using the Interactive Storytelling Chatbot.")
+        print("Goodbye! Thank you for using Menestrello.")

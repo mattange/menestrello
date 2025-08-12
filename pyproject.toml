@@ -24,10 +24,10 @@ dependencies = [
     "treelib (>=1.7.1,<2.0.0)",
     "pydantic (>=2.11.3,<3.0.0)",
     "playsound3 (>=3.2.3,<4.0.0)",
-    "pynput (>=1.8.1,<2.0.0)",
     "jinja2 (>=3.1.6,<4.0.0)",
-    "adafruit-circuitpython-mpr121 (>=2.1.24,<3.0.0)",
-    "setuptools (>=80.9.0,<81.0.0)"
+    "rpi-gpio (>=0.7.1,<0.8.0) ; platform_machine == \"aarch64\" and platform_system == \"Linux\"",
+    "adafruit-circuitpython-mpr121 (>=2.1.24,<3.0.0) ; platform_machine == \"aarch64\" and platform_system == \"Linux\"",
+    "pynput (>=1.8.1,<2.0.0) ; platform_machine != \"aarch64\""
 ]
 requires-python = ">=3.13,<4.0"
 

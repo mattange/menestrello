@@ -6,6 +6,7 @@ def test_sound_player():
     test_audio_file = test_folder / "file_for_test.mp3"
     try:
         _ = playsound(test_audio_file.as_posix())
-        assert True, "Sound played successfully"
+        confirmation = input("Did you hear the audio? (y/n): ").strip().lower()
+        assert(confirmation == "y")
     except Exception as e:
         raise AssertionError(f"Failed to play sound: {e}")

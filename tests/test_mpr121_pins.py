@@ -3,18 +3,21 @@ import pytest
 import platform
 
 
-skip_reason = "This test requires a physical MPR121 sensor connected to the I2C bus and ARM architecture."
-skip_if_not_arm = not platform.machine().startswith("aarch64")
+skip_reason = "This test requires Linux OS and aarch64 architecture."
+skip_if_not_linux_aarch64 = not (
+    platform.system() == "Linux" and platform.machine() == "aarch64"
+)
 
-@pytest.mark.skipif(skip_if_not_arm, reason=skip_reason)
+@pytest.mark.skipif(skip_if_not_linux_aarch64, reason=skip_reason)
 def test_mpr121_pins():
     """
     Test script to check the functionality of all 12 pins of the MPR121.
     Prints which pin is touched.
     """
-    import board
-    import busio
-    import adafruit_mpr121
+
+    import board # pyright: ignore[reportMissingImports]
+    import busio # pyright: ignore[reportMissingImports]
+    import adafruit_mpr121 # pyright: ignore[reportMissingImports]
 
     i2c = busio.I2C(board.SCL, board.SDA)
     mpr121 = adafruit_mpr121.MPR121(i2c)

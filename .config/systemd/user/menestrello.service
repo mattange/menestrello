@@ -1,0 +1,17 @@
+[Unit]
+Description=Menestrello Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/menestrello
+EnvironmentFile=%h/menestrello/.env
+ExecStart=poetry run menestrello --io-class=${MENESTRELLO_IO_CLASS}
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Install]
+WantedBy=default.target

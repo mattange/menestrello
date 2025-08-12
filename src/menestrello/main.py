@@ -2,6 +2,9 @@ from dotenv import load_dotenv
 load_dotenv()
 import logging
 from pathlib import Path
+import os
+import argparse
+import importlib
 
 logger = logging.getLogger(__name__)
 
@@ -9,16 +12,15 @@ from openai import OpenAI
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 logger.debug(f"Root directory: {ROOT_DIR}")
-STORIES_DIR = ROOT_DIR / "stories"
+STORIES_DIR = Path(os.getenv("STORIES_DIR", ROOT_DIR / "stories"))
 logger.debug(f"Stories directory: {STORIES_DIR}")
 STORIES_DIR.mkdir(parents=True, exist_ok=True)
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+logger.debug(f"Environment: {ENVIRONMENT}")
 
 client = OpenAI()
 
 from menestrello.audio import GoogleTextToSpeechConverter
-# from menestrello.user.console_user_io import ConsoleUserIO
-# from menestrello.user.keyboard_user_io import KeyboardUserIO, AudioOutputKeyboardInputUserIO, RandomStoryAudioOutputKeyboardInputUserIO
-from menestrello.user.touch_user_io import RandomStoryTouchInputAudioOutputUserIO
 
 from menestrello.story.story_tree import StoryTree
 
@@ -33,11 +35,23 @@ from menestrello.constants import (
 
 def main():
 
-    # user_interaction = KeyboardUserIO()
-    # user_interaction = ConsoleUserIO()
-    # user_interaction = AudioOutputKeyboardInputUserIO()
-    # user_interaction = RandomStoryAudioOutputKeyboardInputUserIO()
-    user_interaction = RandomStoryTouchInputAudioOutputUserIO()
+    parser = argparse.ArgumentParser(description="Menestrello main entry point")
+    parser.add_argument("--io-class", 
+                        type=str, 
+                        required=False,
+                        default="ConsoleUserIO", 
+                        help="User IO class name from menestrello.user, defaults to 'ConsoleUserIO'.",
+                        )
+    args = parser.parse_args()
+
+    # Dynamically import the class from menestrello.user
+    user_module = importlib.import_module("menestrello.user")
+    try:
+        UserIO = getattr(user_module, args.io_class)
+        user_interaction = UserIO()
+    except AttributeError:
+        logger.error(f"User IO class '{args.io_class}' not found in menestrello.user")
+        raise RuntimeError(f"User IO class '{args.io_class}' not found in menestrello.user")
 
     google_tts = GoogleTextToSpeechConverter()
     google_tts.initialize(
@@ -88,7 +102,7 @@ def main():
         # handle user input if you want to repeat the options only
         elif user_input == user_interaction.REPEAT_OPTIONS:
             story_fragment = user_interaction.story.current_story_interaction
-            if story_fragment is not None:
+            if (story_fragment is not None) and (story_fragment.chatbot.options): # type: ignore
                 user_interaction.provide_output(
                     story_fragment.chatbot.tts_target(
                         include_introduction=False, 
@@ -134,19 +148,7 @@ def main():
         # handle user input to exit the application
         elif user_input == user_interaction.EXIT:
             user_interaction.goodbye()
-            break
-
-        
-        # here we are at a situation where a problem may arise:
-        # we have rewound up in the story, and the user may choose an option
-        # that we created already or not. if not, the code below works fine as 
-        # it will create a new one in the conversation
-        # also the chatbot conversation that you see in the story tree is misleading
-        # as it may not reflect the actual conversation
-        # so you have to:
-        # 1. check if the current step has children in the story tree with the same option
-        # 2. if so, return the story_fragment as that one to be rerendered
-        # 3. if not proceed with the below 
+            break 
 
         # check if the user input matches any of the options under the current step
         assert(isinstance(user_input,str))
@@ -167,14 +169,6 @@ def main():
 
             user_interaction.story.chatbot_conversation__append_chatbot_response(assistant_reply)   # type: ignore
             story_fragment = user_interaction.story.current_story_interaction
-
-        # if story_fragment is None:
-        #     user_interaction.provide_output(
-        #         "No story fragment available.",
-        #         tts_converter=google_tts,
-        #         output_path="./no_story_error.mp3",
-        #     )
-        #     continue
         
         user_interaction.provide_output(
             story_fragment.chatbot.tts_target( # type: ignore
