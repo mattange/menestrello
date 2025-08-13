@@ -39,29 +39,31 @@ class AudioOutputMixin:
         """
         Provide output to the user.
         """
+        play_holding_audio = kwargs.get("play_holding_audio", False)
+        play_initial_holding_audio = kwargs.get("play_initial_holding_audio", False)
+        output_path = kwargs.get("output_path", None)
+        if (output_path is None) or (not output_path.exists()):
+            if play_holding_audio or play_initial_holding_audio:
+                logger.debug("Need to create new audio, playing holding audio.")
+                if play_initial_holding_audio:
+                    holding_audio_path = statics_dir / "holding_initial.mp3"
+                else:
+                    holding_audio_path = statics_dir / random.choice([
+                        "holding_1.mp3", 
+                        "holding_2.mp3", 
+                        "holding_3.mp3",
+                        "holding_4.mp3",
+                    ])
+                if holding_audio_path.exists():
+                    self._play_audio(holding_audio_path)
+                else:
+                    logger.warning(f"Holding audio file not found: {holding_audio_path.as_posix()}")
+
         if message:
             tts_converter = kwargs.get("tts_converter", None)
-            output_path = kwargs.get("output_path", None)
-            play_holding_audio = kwargs.get("play_holding_audio", False)
-            play_initial_holding_audio = kwargs.get("play_initial_holding_audio", False)
+            assert isinstance(message, str), "Message must be a string."
             assert tts_converter is not None and output_path is not None, "TTS converter and output_path must be provided."
-            if not output_path.exists():
-                if play_holding_audio or play_initial_holding_audio:
-                    logger.debug("Need to create new audio, playing holding audio.")
-                    if play_initial_holding_audio:
-                        holding_audio_path = statics_dir / "holding_initial.mp3"
-                    else:
-                        holding_audio_path = statics_dir / random.choice([
-                            "holding_1.mp3", 
-                            "holding_2.mp3", 
-                            "holding_3.mp3",
-                            "holding_4.mp3",
-                        ])
-                    if holding_audio_path.exists():
-                        self._play_audio(holding_audio_path)
-                    else:
-                        logger.warning(f"Holding audio file not found: {holding_audio_path.as_posix()}")
-                self._render_audio(message, tts_converter, output_path)
+            self._render_audio(message, tts_converter, output_path)
             self._play_audio(output_path)
         else:
             logger.warning("No message provided for audio output.")

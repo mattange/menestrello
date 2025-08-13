@@ -73,20 +73,26 @@ def main():
 
         if (user_interaction.story is not None) and (len(user_interaction.story) > 0):
             play_holding_audio = True
-            play_initial_holding_audio = False
         else:
             play_holding_audio = False
-            play_initial_holding_audio = True
 
         # handle user input to start the conversation
         # at any point in the story or at the beginning
         if (user_input == user_interaction.START) or (user_interaction.story is None):
             # Reset the conversation
             user_interaction.story = StoryTree(root_location=STORIES_DIR)
+            user_interaction.provide_output(
+                None,
+                play_initial_holding_audio=True,
+                play_holding_audio=False
+            )
             user_input = user_interaction.get_initial_story_prompt()
+            # you don't need to check if the user input is empty
+            # as the get_initial_story_prompt() will always return a string
+            # then ask the chatbot for the first story fragment
 
         # handle user input to rewind up a level in the story
-        if user_input == user_interaction.UP:
+        elif user_input == user_interaction.UP:
             user_interaction.story.rewind_up()
             story_fragment = user_interaction.story.current_story_interaction
             if story_fragment is not None:
@@ -102,6 +108,7 @@ def main():
             else:
                 user_interaction.story = StoryTree(root_location=STORIES_DIR)
                 user_interaction.present_introduction()
+            # continue to the next iteration
             continue
 
         # handle user input if you want to repeat the options only
@@ -173,15 +180,15 @@ def main():
             user_interaction.story.chatbot_conversation__append_chatbot_response(assistant_reply)   # type: ignore
             story_fragment = user_interaction.story.current_story_interaction
         
+        include_title = (len(user_interaction.story) == 1)
         user_interaction.provide_output(
             story_fragment.chatbot.tts_target( # type: ignore
                 include_introduction=True, 
-                include_title=True
+                include_title=include_title
             ),
             tts_converter=google_tts,
             output_path=story_fragment.storage_folder / "fragment.mp3", # type: ignore
             play_holding_audio=play_holding_audio,
-            play_initial_holding_audio=play_initial_holding_audio,
         )
 
         # now check if the story fragment has options
