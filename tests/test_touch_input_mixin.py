@@ -20,6 +20,8 @@ def test_touch_input_mixin(monkeypatch):
     
     mixin = TouchInputMixin()
     print("Touch a pin on the MPR121 sensor (single tap, double tap, or long press)...")
+    mixin._help()
+    
     result = mixin.get_input()
     assert isinstance(result, tuple), "Result should be a tuple (pin, event_type)"
     pin, event_type = result
