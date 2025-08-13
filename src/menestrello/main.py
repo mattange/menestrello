@@ -12,7 +12,7 @@ from openai import OpenAI
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 logger.debug(f"Root directory: {ROOT_DIR}")
-STORIES_DIR = Path(os.getenv("STORIES_DIR", ROOT_DIR / "stories"))
+STORIES_DIR = Path(os.getenv("MENESTRELLO_STORIES_DIR", ROOT_DIR / "stories"))
 logger.debug(f"Stories directory: {STORIES_DIR}")
 STORIES_DIR.mkdir(parents=True, exist_ok=True)
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
@@ -39,8 +39,11 @@ def main():
     parser.add_argument("--io-class", 
                         type=str, 
                         required=False,
-                        default="ConsoleUserIO", 
-                        help="User IO class name from menestrello.user, defaults to 'ConsoleUserIO'.",
+                        default=os.getenv("MENESTRELLO_IO_CLASS","ConsoleUserIO"), 
+                        help=(
+                            "User IO class name from menestrello.user. "
+                            "Defaults to environment variable MENESTRELLO_IO_CLASS or 'ConsoleUserIO'."
+                        ),
                         )
     args = parser.parse_args()
 
