@@ -73,8 +73,10 @@ def main():
 
         if (user_interaction.story is not None) and (len(user_interaction.story) > 0):
             play_holding_audio = True
+            play_initial_holding_audio = False
         else:
             play_holding_audio = False
+            play_initial_holding_audio = True
 
         # handle user input to start the conversation
         # at any point in the story or at the beginning
@@ -179,6 +181,7 @@ def main():
             tts_converter=google_tts,
             output_path=story_fragment.storage_folder / "fragment.mp3", # type: ignore
             play_holding_audio=play_holding_audio,
+            play_initial_holding_audio=play_initial_holding_audio,
         )
 
         # now check if the story fragment has options
