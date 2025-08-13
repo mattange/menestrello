@@ -138,8 +138,6 @@ def main():
                 )
                 continue
 
-
-
         # handle user input for the options
         elif user_input == user_interaction.ONE:
             user_input = "1"

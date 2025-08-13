@@ -14,6 +14,7 @@ class Interaction(BaseModel):
     user: str = Field(..., description="The user input.")
     chatbot: Response = Field(..., description="The message from the chatbot.")
     
+    
     # This field is set to a new UUID by default and is not included in the constructor
     identifier: uuid.UUID = Field(default_factory=uuid.uuid4, init=False) 
 

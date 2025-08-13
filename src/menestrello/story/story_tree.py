@@ -74,7 +74,17 @@ class StoryTree():
         """
         for node in self._current_subtree.all_nodes():
             if node.data.user == user_input:
-                return node.data
+                # If the user input matches, return the interaction
+                # associated with the node.
+                if isinstance(node.data, Interaction):
+                    logger.debug(f"User input '{user_input}' matches interaction with tag '{node.tag}'")
+                    self._current_step_identifier = node.identifier
+                    self._current_subtree = self._story_tree.subtree(node.identifier)
+                    self._current_step_root_location = node.data.storage_folder
+                    self._chatbot_conversation_append_to("user", node.data.user)
+                    self._chatbot_conversation_append_to("assistant", node.data.chatbot.model_dump_json())
+                    return node.data
+                return None
         return None
     
     def _chatbot_conversation_append_to(self, role: str, content: str) -> Self:

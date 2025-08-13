@@ -22,12 +22,12 @@ class TouchInputMixin:
     TWO: ClassVar[tuple[int,str]] = (2, "single")
     THREE: ClassVar[tuple[int,str]] = (3, "single")
     REPEAT: ClassVar[tuple[int,str]] = (0, "single")
-    REPEAT_OPTIONS: ClassVar[tuple[int,str]] = (2, "single")
+    REPEAT_OPTIONS: ClassVar[tuple[int,str]] = (2, "double")
     EXIT: ClassVar[tuple[int,str]] = (11, "long")
 
     _allowed_pins: ClassVar[set[int]] = {0, 1, 2, 3, 11}
     _allowed_pins_single: ClassVar[set[int]] = {0, 1, 2, 3}
-    _allowed_pins_double: ClassVar[set[int]] = {0}
+    _allowed_pins_double: ClassVar[set[int]] = {0,2}
     _allowed_pins_long: ClassVar[set[int]] = {0,11}
 
     def __init__(self, i2c_bus=None, address=None):
