@@ -95,12 +95,7 @@ class StoryTree():
         return self._chatbot_conversation_append_to(role="user", content=content)
     
     def chatbot_conversation__append_chatbot_response(self, content: str) -> Self:
-        user_input = self._chatbot_conversation[-1]["content"]
-
-        # you could create here an hex identifier to construct the interaction
-        # unique based on its folder location created from the parent
-        # and the user input blended together in a string
-
+        user_input = self._chatbot_conversation[-1]["content"] 
         story_interaction = Interaction.from_primitives(user_input, content)
         self._add_interaction(story_interaction)
         return self._chatbot_conversation_append_to(role="assistant", content=content)

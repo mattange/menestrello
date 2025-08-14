@@ -1,5 +1,5 @@
 [Unit]
-Description=Menestrello Service
+Description=Starts the Menestrello service in user space
 After=network-online.target
 Wants=network-online.target
 
@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=%h/menestrello
 EnvironmentFile=%h/menestrello/.env
-ExecStart=poetry run menestrello --io-class=${MENESTRELLO_IO_CLASS}
+ExecStart=%h/menestrello/.venv/bin/menestrello --io-class=${MENESTRELLO_IO_CLASS}
 Restart=on-failure
 RestartSec=5
 StartLimitBurst=5

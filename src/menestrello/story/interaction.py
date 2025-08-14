@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field, PrivateAttr
 from pathlib import Path
 from typing import Self, ClassVar
 import uuid
-import hashlib
 from functools import cached_property
 
 logger = logging.getLogger(__name__)
