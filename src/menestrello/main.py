@@ -71,11 +71,6 @@ def main():
 
         user_input = user_interaction.get_input()
 
-        if (user_interaction.story is not None) and (len(user_interaction.story) > 0):
-            play_holding_audio = True
-        else:
-            play_holding_audio = False
-
         # handle user input to start the conversation
         # at any point in the story or at the beginning
         if (user_input == user_interaction.START) or (user_interaction.story is None):
@@ -165,9 +160,15 @@ def main():
         story_fragment = user_interaction.story.check_user_input_under_current_step(user_input)
 
         if story_fragment is  None:
+            # first play some holding audio
+            user_interaction.provide_output(
+                None,
+                play_holding_audio=True,
+            )
+
             # Add the user's input to the conversation
             user_interaction.story.chatbot_conversation__append_user_input(user_input)  # type: ignore
-
+            # Get the assistant's reply from the LLM
             response = client.chat.completions.create(
                 model=LLM_MODEL,
                 temperature=LLM_TEMPERATURE,
@@ -188,7 +189,7 @@ def main():
             ),
             tts_converter=google_tts,
             output_path=story_fragment.storage_folder / "fragment.mp3", # type: ignore
-            play_holding_audio=play_holding_audio,
+            play_holding_audio=False,
         )
 
         # now check if the story fragment has options
