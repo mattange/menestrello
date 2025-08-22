@@ -46,7 +46,7 @@ class TouchInputMixin:
             "Touch a pin on the MPR121 sensor to trigger an event.\n"
             "Events:\n"
             "  - Single tap: quick touch and release for pins 0-3\n"
-            "  - Double tap: two quick touches in succession for pin 0\n"
+            "  - Double tap: two quick touches in succession for pin 0 and 2\n"
             "  - Long press: touch and hold for a longer duration for pins 0 and 11\n"
         )
 
