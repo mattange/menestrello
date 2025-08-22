@@ -159,12 +159,13 @@ def main():
         assert(isinstance(user_input,str))
         story_fragment = user_interaction.story.check_user_input_under_current_step(user_input)
 
-        if story_fragment is  None:
-            # first play some holding audio
-            user_interaction.provide_output(
-                None,
-                play_holding_audio=True,
-            )
+        if story_fragment is None:
+            if len(user_interaction.story) > 0:
+                # first play some holding audio
+                user_interaction.provide_output(
+                    None,
+                    play_holding_audio=True,
+                )
 
             # Add the user's input to the conversation
             user_interaction.story.chatbot_conversation__append_user_input(user_input)  # type: ignore
