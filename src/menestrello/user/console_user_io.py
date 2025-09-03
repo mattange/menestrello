@@ -20,6 +20,10 @@ class ConsoleUserIO(TextOutputMixin, GenericUserIO):
         """
         Get input from the user.
         """
-        print("Type 'exit' to end the conversation, 'start' to start, 'up' to go up one level, '1', '2', or '3' for options, or 'repeat' to repeat the last options.")
+        print((
+            "Type 'exit' to end the conversation, 'start' to start, 'up' to go up one level, "
+            "'1', '2', or '3' for options, or 'repeat' to repeat the last full segment,"
+            "'repeat options' to repeat just the options."
+        ))
         user_input = input("You: ").lower()
         return user_input

@@ -72,7 +72,10 @@ class StoryTree():
         Check if the user input matches any of the options under the current step.
         Returns the Interaction if found, otherwise None.
         """
-        for node in self._current_subtree.all_nodes():
+        if self._current_step_identifier is None:
+            return None
+
+        for node in self._current_subtree.children(self._current_step_identifier):
             if node.data.user == user_input:
                 # If the user input matches, return the interaction
                 # associated with the node.
